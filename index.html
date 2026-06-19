@@ -291,67 +291,6 @@
       text-align: right;
     }
 
-    /* ── Browse section ── */
-    .browse {
-      max-width: 680px;
-      margin: 2.5rem auto 3rem;
-      padding: 0 1.2rem;
-    }
-
-    .section-title {
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--muted);
-      margin-bottom: 1rem;
-    }
-
-    .category-tabs {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-      margin-bottom: 1.2rem;
-    }
-
-    .cat-btn {
-      padding: 0.3rem 0.85rem;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      background: transparent;
-      color: var(--muted);
-      font-size: 0.78rem;
-      cursor: pointer;
-      font-family: 'Noto Sans Bengali', sans-serif;
-      transition: all 0.18s;
-    }
-
-    .cat-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .cat-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-
-    .browse-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.5rem;
-    }
-
-    .browse-item {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0.6rem 0.9rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 0.5rem;
-      cursor: pointer;
-      transition: border-color 0.15s;
-    }
-
-    .browse-item:hover { border-color: var(--accent); }
-
-    .browse-src { font-size: 0.88rem; color: var(--text); }
-    .browse-tgt { font-size: 0.88rem; color: var(--accent); text-align: right; }
-
     /* ── Footer ── */
     footer {
       text-align: center;
@@ -363,7 +302,6 @@
     }
 
     @media (max-width: 480px) {
-      .browse-grid { grid-template-columns: 1fr; }
       .hero-script { font-size: 2rem; }
       header { padding: 1rem 1.2rem; }
     }
@@ -411,11 +349,7 @@
   </div>
 </div>
 
-<div class="browse">
-  <div class="section-title">সব শব্দ ব্রাউজ করুন</div>
-  <div class="category-tabs" id="cat-tabs"></div>
-  <div class="browse-grid" id="browse-grid"></div>
-</div>
+
 
 <footer>
   বিষ্ণুপ্রিয়া মণিপুরি ভাষা সংরক্ষণ প্রকল্প<br>
@@ -426,7 +360,6 @@
   // ── State ──
   let corpus = [];
   let direction = 'bm2bn'; // bm2bn | bn2bm
-  let activeCategory = 'সব';
 
   // ── Load CSV ──
   async function loadCorpus() {
@@ -448,7 +381,6 @@
       document.getElementById('corpus-count').textContent =
         `${corpus.length}টি শব্দ ও বাক্য`;
 
-      buildBrowse();
     } catch (e) {
       document.getElementById('corpus-count').textContent = 'corpus লোড ব্যর্থ';
       console.error(e);
@@ -551,65 +483,6 @@
     document.getElementById('clear-btn').classList.remove('visible');
     showPlaceholder();
     document.getElementById('stats').textContent = '';
-  }
-
-  // ── Browse ──
-  // Simple heuristic categories based on entry length
-  function guessCategory(entry) {
-    const bm = entry.bm;
-    const bn = entry.bn;
-    if (bn.includes('আমি') || bn.includes('তুমি') || bn.includes('সে') || bn.includes('আমরা') || bn.includes('আমাদের') || bn.includes('তোমা') || bn.includes('তারা') || bn.includes('আমাকে') || bn.includes('তোমাকে') || bn.includes('তাকে')) return 'সর্বনাম';
-    if (bn.includes('এক') || bn.includes('দুই') || bn.includes('তিন') || bn.includes('হাজার') || bn.includes('লাখ') || bn.includes('শত') || /^\d/.test(bn)) return 'সংখ্যা';
-    if (bm.endsWith('নি') || bm.endsWith('না') || bm.endsWith('না') || bm.endsWith('দেনা')) return 'ক্রিয়া';
-    if (bn.includes('পূর্ব') || bn.includes('পশ্চিম') || bn.includes('উত্তর') || bn.includes('দক্ষিণ') || bn.includes('উপর') || bn.includes('নিচ')) return 'দিক';
-    if (bm.split(' ').length > 2 || bn.split(' ').length > 2) return 'বাক্য';
-    return 'শব্দ';
-  }
-
-  function buildBrowse() {
-    const categories = ['সব', 'সর্বনাম', 'ক্রিয়া', 'সংখ্যা', 'দিক', 'বাক্য', 'শব্দ'];
-    const tabsEl = document.getElementById('cat-tabs');
-
-    tabsEl.innerHTML = categories.map(cat => `
-      <button class="cat-btn ${cat === 'সব' ? 'active' : ''}"
-        onclick="filterBrowse('${cat}', this)">${cat}</button>
-    `).join('');
-
-    renderBrowse('সব');
-  }
-
-  function filterBrowse(cat, btn) {
-    activeCategory = cat;
-    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    renderBrowse(cat);
-  }
-
-  function renderBrowse(cat) {
-    const grid = document.getElementById('browse-grid');
-    const filtered = cat === 'সব'
-      ? corpus
-      : corpus.filter(e => guessCategory(e) === cat);
-
-    if (filtered.length === 0) {
-      grid.innerHTML = '<div class="no-result" style="grid-column:1/-1">কোনো এন্ট্রি নেই</div>';
-      return;
-    }
-
-    grid.innerHTML = filtered.map(e => `
-      <div class="browse-item" onclick="fillQuery('${e.bm.replace(/'/g,"\\'")}')">
-        <span class="browse-src">${e.bm}</span>
-        <span class="browse-tgt">${e.bn}</span>
-      </div>
-    `).join('');
-  }
-
-  function fillQuery(bm) {
-    if (direction !== 'bm2bn') setDirection('bm2bn');
-    const q = document.getElementById('query');
-    q.value = bm;
-    q.dispatchEvent(new Event('input'));
-    q.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   // ── Close dropdown on outside click ──
