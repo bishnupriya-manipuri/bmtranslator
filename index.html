@@ -192,6 +192,35 @@
 
     .clear-btn.visible { display: block; }
 
+    /* ── Dropdown suggestions ── */
+    .dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0; right: 0;
+      background: var(--surface);
+      border: 1px solid var(--accent);
+      border-top: none;
+      border-radius: 0 0 10px 10px;
+      z-index: 100;
+      overflow: hidden;
+      display: none;
+    }
+
+    .dropdown.visible { display: block; }
+
+    .dropdown-item {
+      padding: 0.6rem 1rem;
+      cursor: pointer;
+      font-family: 'Noto Serif Bengali', serif;
+      font-size: 1rem;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    .dropdown-item:last-child { border-bottom: none; }
+    .dropdown-item:hover { background: rgba(232,160,69,0.12); color: var(--accent); }
+
     .card-bottom {
       padding: 1rem 1.4rem 1.2rem;
       min-height: 100px;
@@ -369,6 +398,7 @@
       <div class="input-wrap">
         <textarea id="query" rows="3" placeholder="এখানে লিখুন…" oninput="onInput(this)"></textarea>
         <button class="clear-btn" id="clear-btn" onclick="clearInput()" title="মুছুন">✕</button>
+        <div class="dropdown" id="dropdown"></div>
       </div>
     </div>
     <div class="card-bottom">
@@ -444,6 +474,7 @@
 
     if (!q) {
       showPlaceholder();
+      hideDropdown();
       document.getElementById('stats').textContent = '';
       return;
     }
@@ -455,35 +486,59 @@
       row[srcKey].toLowerCase().includes(q)
     );
 
-    renderResults(matches, tgtKey, srcKey, q);
-    document.getElementById('stats').textContent =
-      matches.length > 0 ? `${matches.length}টি ফলাফল` : '';
+    if (matches.length === 0) {
+      document.getElementById('result-area').innerHTML =
+        '<div class="no-result">কোনো ফলাফল পাওয়া যায়নি</div>';
+      hideDropdown();
+      document.getElementById('stats').textContent = '';
+      return;
+    }
+
+    // Exact match — show result directly
+    const exact = matches.find(r => r[srcKey].toLowerCase() === q);
+    if (exact) {
+      showResult(exact[tgtKey]);
+    } else {
+      showPlaceholder();
+    }
+
+    // Show dropdown if more than one match
+    if (matches.length > 1 || !exact) {
+      showDropdown(matches, srcKey, tgtKey);
+    } else {
+      hideDropdown();
+    }
+
+    document.getElementById('stats').textContent = '';
   }
 
-  function renderResults(matches, tgtKey, srcKey, q) {
-    const area = document.getElementById('result-area');
+  function showResult(text) {
+    document.getElementById('result-area').innerHTML =
+      `<div class="result-text">${text}</div>`;
+  }
 
-    if (matches.length === 0) {
-      area.innerHTML = '<div class="no-result">কোনো ফলাফল পাওয়া যায়নি</div>';
-      return;
-    }
-
-    // Exact match first
-    const exact = matches.find(r => r[srcKey].toLowerCase() === q);
-    if (exact && matches.length === 1) {
-      area.innerHTML = `<div class="result-text">${exact[tgtKey]}</div>`;
-      return;
-    }
-
-    // Multiple results
-    const items = matches.slice(0, 12).map(r => `
-      <div class="result-item">
-        <span class="result-src">${r[srcKey]}</span>
-        <span class="result-tgt">${r[tgtKey]}</span>
+  function showDropdown(matches, srcKey, tgtKey) {
+    const dd = document.getElementById('dropdown');
+    dd.innerHTML = matches.slice(0, 10).map(r => `
+      <div class="dropdown-item" onclick="selectSuggestion('${r[srcKey].replace(/'/g,"\'")
+}', '${r[tgtKey].replace(/'/g,"\'")}')">
+        ${r[srcKey]}
       </div>
     `).join('');
+    dd.classList.add('visible');
+  }
 
-    area.innerHTML = `<div class="results-list">${items}</div>`;
+  function hideDropdown() {
+    const dd = document.getElementById('dropdown');
+    dd.classList.remove('visible');
+    dd.innerHTML = '';
+  }
+
+  function selectSuggestion(src, tgt) {
+    document.getElementById('query').value = src;
+    document.getElementById('clear-btn').classList.add('visible');
+    showResult(tgt);
+    hideDropdown();
   }
 
   function showPlaceholder() {
@@ -556,6 +611,11 @@
     q.dispatchEvent(new Event('input'));
     q.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
+
+  // ── Close dropdown on outside click ──
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.input-wrap')) hideDropdown();
+  });
 
   // ── Init ──
   loadCorpus();
