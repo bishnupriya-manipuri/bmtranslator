@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>বিষ্ণুপ্রিয়া মণিপুরি ↔ বাংলা অনুবাদ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;600;700&family=Noto+Sans+Bengali:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:       #0f1117;
+      --surface:  #1a1d27;
+      --border:   #2a2e3d;
+      --accent:   #e8a045;
+      --accent2:  #c45c2e;
+      --text:     #e8e4dc;
+      --muted:    #7a7f95;
+      --success:  #4caf82;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans Bengali', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 1.2rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logo-mark {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Noto Serif Bengali', serif;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .site-title {
+      font-family: 'Noto Serif Bengali', serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .site-subtitle {
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center;
+      padding: 3.5rem 1.5rem 2rem;
+    }
+
+    .hero-script {
+      font-family: 'Noto Serif Bengali', serif;
+      font-size: clamp(2rem, 6vw, 3.8rem);
+      font-weight: 700;
+      line-height: 1.15;
+      background: linear-gradient(135deg, var(--accent) 30%, var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.6rem;
+    }
+
+    .hero-sub {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .corpus-badge {
+      display: inline-block;
+      margin-top: 0.8rem;
+      padding: 0.25rem 0.8rem;
+      background: rgba(232,160,69,0.12);
+      border: 1px solid rgba(232,160,69,0.3);
+      border-radius: 999px;
+      font-size: 0.75rem;
+      color: var(--accent);
+    }
+
+    /* ── Direction toggle ── */
+    .direction-toggle {
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      margin: 1.8rem auto 0;
+      width: fit-content;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .dir-btn {
+      padding: 0.55rem 1.4rem;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-family: 'Noto Sans Bengali', sans-serif;
+      font-size: 0.82rem;
+      transition: all 0.2s;
+    }
+
+    .dir-btn.active {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 500;
+    }
+
+    .dir-sep {
+      width: 1px;
+      background: var(--border);
+      align-self: stretch;
+    }
+
+    /* ── Translator card ── */
+    .translator {
+      max-width: 680px;
+      margin: 2rem auto 0;
+      padding: 0 1.2rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .card-top {
+      padding: 1.2rem 1.4rem 0.8rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .lang-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 0.6rem;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    #query {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: 'Noto Serif Bengali', serif;
+      font-size: 1.5rem;
+      line-height: 1.5;
+      resize: none;
+      min-height: 80px;
+    }
+
+    #query::placeholder { color: var(--muted); font-size: 1.2rem; }
+
+    .clear-btn {
+      position: absolute;
+      top: 0; right: 0;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 1.1rem;
+      line-height: 1;
+      padding: 2px;
+      display: none;
+    }
+
+    .clear-btn.visible { display: block; }
+
+    .card-bottom {
+      padding: 1rem 1.4rem 1.2rem;
+      min-height: 100px;
+    }
+
+    .result-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 0.7rem;
+    }
+
+    .result-text {
+      font-family: 'Noto Serif Bengali', serif;
+      font-size: 1.5rem;
+      color: var(--accent);
+      line-height: 1.5;
+      min-height: 2rem;
+    }
+
+    .result-text.placeholder {
+      color: var(--muted);
+      font-size: 1rem;
+      font-family: 'Noto Sans Bengali', sans-serif;
+    }
+
+    /* ── Results list ── */
+    .results-list {
+      margin-top: 0.5rem;
+    }
+
+    .result-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid var(--border);
+      gap: 1rem;
+    }
+
+    .result-item:last-child { border-bottom: none; }
+
+    .result-src {
+      font-family: 'Noto Serif Bengali', serif;
+      font-size: 1rem;
+      color: var(--text);
+    }
+
+    .result-tgt {
+      font-family: 'Noto Serif Bengali', serif;
+      font-size: 1rem;
+      color: var(--accent);
+      text-align: right;
+    }
+
+    .no-result {
+      color: var(--muted);
+      font-size: 0.88rem;
+      padding: 0.5rem 0;
+    }
+
+    /* ── Search stats ── */
+    .search-stats {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 0.6rem;
+      text-align: right;
+    }
+
+    /* ── Browse section ── */
+    .browse {
+      max-width: 680px;
+      margin: 2.5rem auto 3rem;
+      padding: 0 1.2rem;
+    }
+
+    .section-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .category-tabs {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.2rem;
+    }
+
+    .cat-btn {
+      padding: 0.3rem 0.85rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.78rem;
+      cursor: pointer;
+      font-family: 'Noto Sans Bengali', sans-serif;
+      transition: all 0.18s;
+    }
+
+    .cat-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .cat-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    .browse-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+
+    .browse-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+
+    .browse-item:hover { border-color: var(--accent); }
+
+    .browse-src { font-size: 0.88rem; color: var(--text); }
+    .browse-tgt { font-size: 0.88rem; color: var(--accent); text-align: right; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.72rem;
+      line-height: 1.8;
+    }
+
+    @media (max-width: 480px) {
+      .browse-grid { grid-template-columns: 1fr; }
+      .hero-script { font-size: 2rem; }
+      header { padding: 1rem 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo-mark">বি.ম</div>
+  <div>
+    <div class="site-title">বিষ্ণুপ্রিয়া মণিপুরি অনুবাদক</div>
+    <div class="site-subtitle">Bishnupriya Manipuri ↔ Bengali Translator</div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-script">ইমার ঠার</div>
+  <div class="hero-sub">আমাদের ভাষা • Our Language</div>
+  <div class="corpus-badge" id="corpus-count">corpus লোড হচ্ছে…</div>
+
+  <div class="direction-toggle">
+    <button class="dir-btn active" id="btn-bm2bn" onclick="setDirection('bm2bn')">বিষ্ণুপ্রিয়া → বাংলা</button>
+    <div class="dir-sep"></div>
+    <button class="dir-btn" id="btn-bn2bm" onclick="setDirection('bn2bm')">বাংলা → বিষ্ণুপ্রিয়া</button>
+  </div>
+</section>
+
+<div class="translator">
+  <div class="card">
+    <div class="card-top">
+      <div class="lang-label" id="src-label">বিষ্ণুপ্রিয়া মণিপুরি লিখুন</div>
+      <div class="input-wrap">
+        <textarea id="query" rows="3" placeholder="এখানে লিখুন…" oninput="onInput(this)"></textarea>
+        <button class="clear-btn" id="clear-btn" onclick="clearInput()" title="মুছুন">✕</button>
+      </div>
+    </div>
+    <div class="card-bottom">
+      <div class="result-label" id="tgt-label">বাংলা অনুবাদ</div>
+      <div id="result-area">
+        <div class="result-text placeholder">অনুবাদ এখানে দেখাবে</div>
+      </div>
+      <div class="search-stats" id="stats"></div>
+    </div>
+  </div>
+</div>
+
+<div class="browse">
+  <div class="section-title">সব শব্দ ব্রাউজ করুন</div>
+  <div class="category-tabs" id="cat-tabs"></div>
+  <div class="browse-grid" id="browse-grid"></div>
+</div>
+
+<footer>
+  বিষ্ণুপ্রিয়া মণিপুরি ভাষা সংরক্ষণ প্রকল্প<br>
+  corpus-ভিত্তিক অনুবাদ · Corpus-based Translation
+</footer>
+
+<script>
+  // ── State ──
+  let corpus = [];
+  let direction = 'bm2bn'; // bm2bn | bn2bm
+  let activeCategory = 'সব';
+
+  // ── Load CSV ──
+  async function loadCorpus() {
+    try {
+      const res = await fetch('bm_bengali_corpus.csv');
+      const text = await res.text();
+      const lines = text.trim().split('\n').slice(1); // skip header
+      corpus = lines
+        .map(line => {
+          const parts = line.split(',');
+          if (parts.length < 2) return null;
+          return {
+            bm: parts[0].trim(),
+            bn: parts.slice(1).join(',').trim()
+          };
+        })
+        .filter(Boolean);
+
+      document.getElementById('corpus-count').textContent =
+        `${corpus.length}টি শব্দ ও বাক্য`;
+
+      buildBrowse();
+    } catch (e) {
+      document.getElementById('corpus-count').textContent = 'corpus লোড ব্যর্থ';
+      console.error(e);
+    }
+  }
+
+  // ── Direction toggle ──
+  function setDirection(dir) {
+    direction = dir;
+    document.getElementById('btn-bm2bn').classList.toggle('active', dir === 'bm2bn');
+    document.getElementById('btn-bn2bm').classList.toggle('active', dir === 'bn2bm');
+    document.getElementById('src-label').textContent =
+      dir === 'bm2bn' ? 'বিষ্ণুপ্রিয়া মণিপুরি লিখুন' : 'বাংলা লিখুন';
+    document.getElementById('tgt-label').textContent =
+      dir === 'bm2bn' ? 'বাংলা অনুবাদ' : 'বিষ্ণুপ্রিয়া মণিপুরি অনুবাদ';
+    clearInput();
+  }
+
+  // ── Search ──
+  function onInput(el) {
+    const q = el.value.trim().toLowerCase();
+    document.getElementById('clear-btn').classList.toggle('visible', q.length > 0);
+
+    if (!q) {
+      showPlaceholder();
+      document.getElementById('stats').textContent = '';
+      return;
+    }
+
+    const srcKey = direction === 'bm2bn' ? 'bm' : 'bn';
+    const tgtKey = direction === 'bm2bn' ? 'bn' : 'bm';
+
+    const matches = corpus.filter(row =>
+      row[srcKey].toLowerCase().includes(q)
+    );
+
+    renderResults(matches, tgtKey, srcKey, q);
+    document.getElementById('stats').textContent =
+      matches.length > 0 ? `${matches.length}টি ফলাফল` : '';
+  }
+
+  function renderResults(matches, tgtKey, srcKey, q) {
+    const area = document.getElementById('result-area');
+
+    if (matches.length === 0) {
+      area.innerHTML = '<div class="no-result">কোনো ফলাফল পাওয়া যায়নি</div>';
+      return;
+    }
+
+    // Exact match first
+    const exact = matches.find(r => r[srcKey].toLowerCase() === q);
+    if (exact && matches.length === 1) {
+      area.innerHTML = `<div class="result-text">${exact[tgtKey]}</div>`;
+      return;
+    }
+
+    // Multiple results
+    const items = matches.slice(0, 12).map(r => `
+      <div class="result-item">
+        <span class="result-src">${r[srcKey]}</span>
+        <span class="result-tgt">${r[tgtKey]}</span>
+      </div>
+    `).join('');
+
+    area.innerHTML = `<div class="results-list">${items}</div>`;
+  }
+
+  function showPlaceholder() {
+    document.getElementById('result-area').innerHTML =
+      '<div class="result-text placeholder">অনুবাদ এখানে দেখাবে</div>';
+  }
+
+  function clearInput() {
+    document.getElementById('query').value = '';
+    document.getElementById('clear-btn').classList.remove('visible');
+    showPlaceholder();
+    document.getElementById('stats').textContent = '';
+  }
+
+  // ── Browse ──
+  // Simple heuristic categories based on entry length
+  function guessCategory(entry) {
+    const bm = entry.bm;
+    const bn = entry.bn;
+    if (bn.includes('আমি') || bn.includes('তুমি') || bn.includes('সে') || bn.includes('আমরা') || bn.includes('আমাদের') || bn.includes('তোমা') || bn.includes('তারা') || bn.includes('আমাকে') || bn.includes('তোমাকে') || bn.includes('তাকে')) return 'সর্বনাম';
+    if (bn.includes('এক') || bn.includes('দুই') || bn.includes('তিন') || bn.includes('হাজার') || bn.includes('লাখ') || bn.includes('শত') || /^\d/.test(bn)) return 'সংখ্যা';
+    if (bm.endsWith('নি') || bm.endsWith('না') || bm.endsWith('না') || bm.endsWith('দেনা')) return 'ক্রিয়া';
+    if (bn.includes('পূর্ব') || bn.includes('পশ্চিম') || bn.includes('উত্তর') || bn.includes('দক্ষিণ') || bn.includes('উপর') || bn.includes('নিচ')) return 'দিক';
+    if (bm.split(' ').length > 2 || bn.split(' ').length > 2) return 'বাক্য';
+    return 'শব্দ';
+  }
+
+  function buildBrowse() {
+    const categories = ['সব', 'সর্বনাম', 'ক্রিয়া', 'সংখ্যা', 'দিক', 'বাক্য', 'শব্দ'];
+    const tabsEl = document.getElementById('cat-tabs');
+
+    tabsEl.innerHTML = categories.map(cat => `
+      <button class="cat-btn ${cat === 'সব' ? 'active' : ''}"
+        onclick="filterBrowse('${cat}', this)">${cat}</button>
+    `).join('');
+
+    renderBrowse('সব');
+  }
+
+  function filterBrowse(cat, btn) {
+    activeCategory = cat;
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderBrowse(cat);
+  }
+
+  function renderBrowse(cat) {
+    const grid = document.getElementById('browse-grid');
+    const filtered = cat === 'সব'
+      ? corpus
+      : corpus.filter(e => guessCategory(e) === cat);
+
+    if (filtered.length === 0) {
+      grid.innerHTML = '<div class="no-result" style="grid-column:1/-1">কোনো এন্ট্রি নেই</div>';
+      return;
+    }
+
+    grid.innerHTML = filtered.map(e => `
+      <div class="browse-item" onclick="fillQuery('${e.bm.replace(/'/g,"\\'")}')">
+        <span class="browse-src">${e.bm}</span>
+        <span class="browse-tgt">${e.bn}</span>
+      </div>
+    `).join('');
+  }
+
+  function fillQuery(bm) {
+    if (direction !== 'bm2bn') setDirection('bm2bn');
+    const q = document.getElementById('query');
+    q.value = bm;
+    q.dispatchEvent(new Event('input'));
+    q.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  // ── Init ──
+  loadCorpus();
+</script>
+</body>
+</html>
